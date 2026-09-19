@@ -2,8 +2,8 @@
 
 LedgerLens is an early-development, read-only search, reporting, and analytics
 layer for Sage 50 Accounts. Phase 001 provides the development foundation and a
-temporary synthetic customer grid. Sage connectivity and synchronization are
-not implemented.
+temporary synthetic customer grid. Phase 002 adds a separate read-only Sage ODBC
+discovery CLI. Synchronization and canonical accounting models are not implemented.
 
 ## Architecture
 
@@ -205,6 +205,37 @@ GitHub Actions runs Linux backend quality/package checks, Windows backend unit
 tests, frontend quality/build checks, and a real Linux Compose readiness smoke
 test. No Sage installation or private credentials are required.
 
+## Sage discovery (Phase 002)
+
+Real discovery requires Windows, a matching 64-bit Sage 50 Accounts ODBC driver,
+and a System DSN configured for the company. Sage v28.1+ DSNs normally point at
+the company's `ACCDATA` directory. Configure the DSN in Windows ODBC Data Source
+Administrator; LedgerLens does not create DSNs or access company files directly.
+The normal web application needs neither Sage configuration nor pyodbc.
+
+From `backend/`, install the optional extra with `uv sync --locked --extra sage`.
+Set the `LEDGERLENS_SAGE_*` placeholders in the ignored root `.env`, then run:
+
+```powershell
+uv run --extra sage ledgerlens-sage drivers
+uv run --extra sage ledgerlens-sage probe --sage-version 34.0.23.0 --sage-build 34.0.23.0 --output ../artifacts/sage/local-v34
+uv run --extra sage ledgerlens-sage schema --sage-version 34.0.23.0 --sage-build 34.0.23.0 --output ../artifacts/sage/local-v34
+uv run --extra sage ledgerlens-sage report --output ../artifacts/sage/local-v34 --sanitized
+```
+
+Use your actual Help > About version/build rather than assuming the example matches.
+The CLI also provides `describe-table`, `capabilities`, `profile`, `relationships`,
+and `benchmark`. Every command has `--help`. Raw metadata and aggregate artifacts
+stay in ignored `artifacts/sage/`; no business records are exported. Benchmarks
+are explicit and sequential. See [the discovery guide](docs/sage/README.md) for
+bounds, timeout limitations, commands, and live findings.
+
+Sage integration tests are opt-in; never configure Sage credentials in hosted CI:
+
+```powershell
+uv run --extra sage pytest --run-sage-integration -m sage_integration
+```
+
 ## Repository layout
 
 ```text
@@ -250,7 +281,7 @@ are stored in LedgerLens. No LedgerLens repository licence is added by this phas
 
 ## Scope of this foundation
 
-Sage adapters and ODBC, canonical accounting schemas, synchronization, accounting
-search collections, advanced remote queries, authentication, reporting, and
-production deployment remain deferred. Phase 002 should define its own plan
-before any of those features are implemented.
+Sage adapters, canonical accounting schemas, synchronization, accounting search
+collections, advanced remote queries, authentication, application reporting, and
+production deployment remain deferred. Phase 002 discovery supplies evidence
+for later decisions; it does not implement these features.

@@ -42,8 +42,9 @@ jobs:
           python-version: "3.14"
           enable-cache: true
           prune-cache: true
-      - run: uv sync --locked
-      - run: uv run pytest
+      - run: uv sync --locked --extra sage
+      - run: uv run --extra sage ledgerlens-sage drivers
+      - run: uv run --extra sage pytest
 
   frontend:
     runs-on: ubuntu-24.04

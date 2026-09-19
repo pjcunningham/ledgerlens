@@ -89,6 +89,7 @@ test-results/
 # Local Sage / ODBC data or exports
 data/
 exports/
+artifacts/sage/
 
 # Local Codex configuration
 .codex/config.toml

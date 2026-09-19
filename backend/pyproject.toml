@@ -14,6 +14,12 @@ dependencies = [
     "typesense>=1,<2",
 ]
 
+[project.optional-dependencies]
+sage = ["pyodbc>=5.3,<6; sys_platform == 'win32'"]
+
+[project.scripts]
+ledgerlens-sage = "ledgerlens.sage.cli:main"
+
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "httpx>=0.28,<1", "ruff>=0.11,<1", "mypy>=1.15,<2"]
 
@@ -37,5 +43,8 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["integration: requires running PostgreSQL and Typesense (opt-in)"]
+markers = [
+    "integration: requires running PostgreSQL and Typesense (opt-in)",
+    "sage_integration: requires real Sage System DSN (opt-in)",
+]
 addopts = "-ra"
