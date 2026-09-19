@@ -2,7 +2,7 @@
 
 ## Status
 
-Planned.
+Implemented locally. Required local automated checks pass; browser acceptance and hosted GitHub Actions remain unverified. See [the Phase 001 completion report](../../docs/phase-001-completion.md) for exact results and limitations. No changes have been committed or pushed.
 
 ## Objective
 

@@ -1,0 +1,42 @@
+name: ledgerlens
+services:
+  postgres:
+    image: postgres:18.6
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ledgerlens}
+      POSTGRES_USER: ${POSTGRES_USER:-ledgerlens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ledgerlens_dev}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  typesense:
+    image: typesense/typesense:30.2
+    environment:
+      TYPESENSE_API_KEY: ${LEDGERLENS_TYPESENSE_API_KEY:-ledgerlens-development-key}
+      TYPESENSE_DATA_DIR: /data
+    ports:
+      - "127.0.0.1:${TYPESENSE_PORT:-8108}:8108"
+    volumes:
+      - typesense_data:/data
+    healthcheck:
+      # The official image has Bash but no curl/wget. Probe the HTTP health body.
+      test:
+        - CMD
+        - bash
+        - -ec
+        - |
+          exec 3<>/dev/tcp/127.0.0.1/8108
+          printf 'GET /health HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3
+          grep -q '"ok"[[:space:]]*:[[:space:]]*true' <&3
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres_data:
+  typesense_data:

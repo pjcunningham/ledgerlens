@@ -177,3 +177,18 @@ Do not introduce new dependencies without a clear benefit.
 When uncertain about an existing project convention, inspect the repository before inventing a new one.
 
 Do not replace working project patterns merely because another approach is more fashionable.
+
+## Command execution
+
+Prefer simple, reusable project commands.
+
+Avoid long inline shell, PowerShell, or `python -c` programs where a normal
+project command, built-in file inspection, PyCharm MCP tool, or short temporary
+script would be clearer.
+
+When diagnostics require scripting, prefer a short temporary script within the
+repository and invoke it through a stable command such as `uv run python ...`.
+
+Batch related safe checks where practical to reduce unnecessary approval prompts.
+Do not request broader sandbox, filesystem, or network permissions merely to
+avoid approval prompts.

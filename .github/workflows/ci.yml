@@ -1,0 +1,90 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend quality (Linux)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.10.9"
+          python-version: "3.14"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+      - run: uv run pytest
+      - run: uv build
+
+  windows-backend:
+    name: Backend smoke (Windows)
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.10.9"
+          python-version: "3.14"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.10.9"
+          python-version: "3.14"
+          enable-cache: true
+      - run: docker compose config --quiet
+      - run: docker compose up -d --wait --wait-timeout 120
+      - run: uv sync --locked
+        working-directory: backend
+      - run: uv run pytest --run-integration -m integration
+        working-directory: backend
+      - run: uv run alembic upgrade head
+        working-directory: backend
+      - name: Infrastructure diagnostics
+        if: failure()
+        run: docker compose logs --tail=100
+      - name: Stop CI infrastructure
+        if: always()
+        run: docker compose down
