@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+dist/
+build/
+*.egg-info/
+
+# uv / Python
+.python-version
+
+# Node / React
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Frontend builds
+frontend/dist/
+frontend/build/
+.vite/
+
+# TypeScript
+*.tsbuildinfo
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Certificates / keys
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# Test / tooling output
+playwright-report/
+test-results/
+
+# Local Sage / ODBC data or exports
+data/
+exports/
+
+# Local Codex configuration
+.codex/config.toml
